@@ -1,4 +1,4 @@
-file_name='E_octave_new_new.wav'; % output signal of phase 1
+file_name='restuarant_new.wav'; % output signal of phase 1
 
 [y, Fs] = audioread(file_name);
 
@@ -68,29 +68,41 @@ for n=1:rows2
     cosbank(n,:)= cos_function;
     cutoff_1=round(cutoff_2,-3);
     cutoff_2=round(cutoff_2+1000,-3)-1;
+
 end
 
+%{
 points_per_5ms= floor((points_per_second/1000)*5);
 figure(1);
 plot(cosbank(1, 1:points_per_5ms));
 title('Cosbank channel 1');
 xlabel('Time points');
 ylabel('Gain (dB)');
-
+%}
 
 modulated=zeros(8,length(y));
 k=size(modulated); 
 rows2=k(1);
 
+cutoff_1=100; % Start frequency%
+cutoff_2=1000; % End frequency%
 for n=1:rows2
     %cosbank_channel_transposed=cosbank(n,:).';
     %modulated_signal=cosbank_channel_transposed* all_envelope(n,:);
     %negative_channel=-(all_envelope(n,:));
     modulated_signal_positive=cosbank(n,:).*all_envelope(n,:);
+    
+    %central_frequency = (cutoff_1 + cutoff_2)/2;
+    %modulated_signal=ammod(all_envelope(n,:),central_frequency,16000);
+    
     %modulated_channel_negative=cosbank(n,:).*negative_channel;
+    
     modulated(n,:)=modulated_signal_positive;
+    cutoff_1=round(cutoff_2,-3);
+    cutoff_2=round(cutoff_2+1000,-3)-1;
 end    
 
+%{
 figure(2);
 plot(all_envelope(2, :));
 title('rectified channel 2');
@@ -102,5 +114,29 @@ plot(modulated(2, :));
 title('modulated channel 2');
 xlabel('Time points');
 ylabel('Gain (dB)');
+%}
+
+final_signal=zeros(1,length(y));
+for n=1:rows2
+    final_signal=final_signal+modulated(n,:);
+end
+
+final_abs=abs(final_signal);
+final_abs_max=max(final_abs);
+final_signal=final_signal./final_abs_max;
 
 
+figure(4);
+plot(final_signal);
+title('final signal');
+xlabel('Time points');
+ylabel('Gain (dB)');
+
+figure(5)
+plot(y)
+title('original signal');
+xlabel('Time points');
+ylabel('Gain (dB)');
+
+filename='restuarant_phase3.wav';
+audiowrite(filename,final_signal,Fs);
