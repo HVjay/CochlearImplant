@@ -1,5 +1,5 @@
-file_name='different_filters/sound_quality_file27.wav'; % output signal of phase 1
-final_filename='different_filters/sound_quality_file27_butter_8thOrder.wav';
+file_name='different_filters/sound_quality_file4.wav'; % output signal of phase 1
+final_filename='different_filters/sound_quality_file4_butter_8thOrder_lpf_kaiser.wav';
 disp('ORDER 100')
 [y,Fs]=audioread(file_name);
 %sound(y,Fs);
